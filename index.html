@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>videojs-dvr Demo</title>
+  <link href="https://vjs.zencdn.net/6.8.0/video-js.css" rel="stylesheet">
+
+  <link href="dist/videojs-dvr.css" rel="stylesheet">
+  <style>
+    body{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+
+    }
+
+    #videojs-dvr-player{
+      width: 700px;
+      height: 400px;
+
+    }
+
+  </style>
+</head>
+<body>
+  <video id="videojs-dvr-player" class="video-js vjs-default-skin" controls autoplay muted>
+    <source src="http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8"
+            type='application/x-mpegURL'>
+  </video>
+
+  <script src="https://vjs.zencdn.net/6.8.0/video.js"></script>
+  <script src="node_modules/videojs-contrib-hls/dist/videojs-contrib-hls.min.js"></script>
+  <script src="dist/videojs-dvr.js"></script>
+  <script>
+    (function(window, videojs) {
+      var player = window.player = videojs('videojs-dvr-player');
+      player.dvr();
+      player.play();
+    }(window, window.videojs));
+  </script>
+</body>
+</html>
