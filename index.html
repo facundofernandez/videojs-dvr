@@ -6,6 +6,7 @@
   <link href="https://vjs.zencdn.net/6.8.0/video-js.css" rel="stylesheet">
 
   <link href="dist/videojs-dvr.css" rel="stylesheet">
+
   <style>
     body{
       display: flex;
@@ -32,11 +33,13 @@
 
   <script src="https://vjs.zencdn.net/6.8.0/video.js"></script>
   <script src="node_modules/videojs-contrib-hls/dist/videojs-contrib-hls.min.js"></script>
+
   <script src="dist/videojs-dvr.js"></script>
   <script>
     (function(window, videojs) {
       var player = window.player = videojs('videojs-dvr-player');
       player.dvr();
+
       player.play();
     }(window, window.videojs));
   </script>

@@ -1,10 +1,21 @@
 // Sass for videojs-dvr
 
+$colorButton:tomato;
+$colorButtonOnAir:darken(tomato,50%);
+
 .video-js {
 
   // This class is added to the video.js element by the plugin by default.
   &.vjs-dvr {
     display: block;
+
+    & .vjs-live-control{
+      display:none
+    }
+
+    &.vjs-live .vjs-progress-control {
+      display: flex;
+    }
 
     &.vjs-user-inactive .vjs-control-bar.vjs-dvr-control-bar .vjs-progress-control .vjs-slider .vjs-seek-handle:before {
       font-size: 0;
@@ -18,16 +29,27 @@
     .vjs-live-label {
       padding: 4px;
       font-weight: bold;
-      color: #ffffff;
+      //font-size: 14px;
+      position: relative;
+      bottom: calc(-50% + 4px);
+      color: #8c8b8b;
       border-radius: 3px;
-      background: black;
+      background: $colorButtonOnAir;
       &.important {
         background-color: #c43c35;
       }
       &.onair {
-        //background-color: #46a546;
-        background-color: tomato;
+        color:#fff;
+        background-color: $colorButton;
       }
+    }
+
+    & .vjs-time-tooltip{
+      z-index: 0;
+    }
+
+    & .vjs-mouse-display .vjs-time-tooltip{
+      z-index: 1;
     }
 
     .vjs-control-bar.vjs-dvr-control-bar {
@@ -37,16 +59,14 @@
         position: relative;
         height: 3em;
         background: 0 0;
-        padding: 0 1em;
+        //padding: 0 1em;
         top: 0;
       }
-      .vjs-live-button {
-        display: block;
-        text-align: center;
-        cursor: pointer;
-        float: right;
-        line-height: 1em;
-        padding: 1em 1em;
+      & .vjs-live-button {
+
+        & .vjs-live-label:hover{
+          cursor: pointer;
+        }
 
       }
 

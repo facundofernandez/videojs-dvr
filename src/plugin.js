@@ -13,61 +13,75 @@ const registerPlugin = videojs.registerPlugin || videojs.plugin;
 const PlayProgressBar = videojs.getComponent('PlayProgressBar');
 const MouseTimeDisplay = videojs.getComponent('MouseTimeDisplay');
 const LoadProgressBar = videojs.getComponent('LoadProgressBar');
+const Slider = videojs.getComponent('Slider');
+
+Slider.prototype.update = function update() {
+
+  //if (typeof this.player_.tech_.hls.playlists.media_ !== "undefined") this.player_.tech_.hls.playlists.media_["endList"] = true;
+
+  // In VolumeBar init we have a setTimeout for update that pops and update
+  // to the end of the execution stack. The player is destroyed before then
+  // update will cause an error
+  if (!this.el_) {
+    return;
+  }
+
+  // If scrubbing, we could use a cached value to make the handle keep up
+  // with the user's mouse. On HTML5 browsers scrubbing is really smooth, but
+  // some flash players are slow, so we might want to utilize this later.
+
+  //let durationCustom = this.player_.duration() === Number.POSITIVE_INFINITY ? 100000 : this.player_.duration();
+
+  //let progress =  (this.player_.scrubbing()) ? this.player_.getCache().currentTime / durationCustom : this.player_.currentTime() / durationCustom;
+  //let progress = (this.player_.scrubbing()) ? this.player_.getCache().currentTime / this.player_.duration() : this.player_.currentTime() / this.player_.duration();
+  //let progress =  (this.player_.scrubbing()) ? this.player_.getCache().currentTime / this.player_.getCache().duration() : this.player_.currentTime() / this.player_.duration();
+  let progress = this.getPercent();
+  const bar = this.bar;
+
+  // If there's no bar...
+  if (!bar) {
+    return;
+  }
+  /*
+  console.log("slider", progress, {
+    scrubbing: this.player_.scrubbing(),
+    cache: this.player_.getCache(),
+    duration: this.player_.duration(),
+    durationCache: this.player_.getCache().duration,
+    //durationCustom: durationCustom,
+    currentTime: this.player_.currentTime()
+  });
+
+  */
+  // Protect against no duration and other division issues
+  if (typeof progress !== 'number' ||
+    progress !== progress ||
+    progress < 0 ||
+    progress === Infinity) {
+    progress = 0;
+  }
 
 
-LoadProgressBar.prototype.update = function update(event) {
-  const buffered = this.player_.buffered();
-  const duration = this.player_.duration();
-  const bufferedEnd = this.player_.bufferedEnd();
-  const children = this.partEls_;
+  //if(progress === 0) progress = 1;
 
-  // get the percent width of a time compared to the total end
-  const percentify = function(time, end) {
-    // no NaN
-    let percent = (time / end) || 0;
+  // Convert to a percentage for setting
+  const percentage = (progress * 100).toFixed(2) + '%';
+  const style = bar.el().style;
 
-
-    if(percent < 0.001 || (end === Infinity && time !== 0)) percent = 1;
-
-    //percent = Math.round(percent * 100) / 100;
-
-    console.log({
-      time:time,
-      end:end,
-      percent:percent,
-      por:((percent >= 1 ? 1 : percent) * 100) + '%'
-    });
-
-    return ((percent >= 1 ? 1 : percent) * 100) + '%';
-  };
-
-
-
-  // update the width of the progress bar
-  this.el_.style.width = percentify(bufferedEnd, duration);
-
-  // add child elements to represent the individual buffered time ranges
-  for (let i = 0; i < buffered.length; i++) {
-    const start = buffered.start(i);
-    const end = buffered.end(i);
-    let part = children[i];
-
-    if (!part) {
-      part = this.el_.appendChild(document.createElement('div'));
-      children[i] = part;
+  // Set the new bar width or height
+  if (progress !== 0) {
+    if (this.vertical()) {
+      style.height = percentage;
+    } else {
+      style.width = percentage;
     }
-
-    // set the percent based on the width of the progress bar (bufferedEnd)
-    part.style.left = percentify(start, bufferedEnd);
-    part.style.width = percentify(end - start, bufferedEnd);
   }
 
-  // remove unused buffered range elements
-  for (let i = children.length; i > buffered.length; i--) {
-    this.el_.removeChild(children[i - 1]);
-  }
-  children.length = buffered.length;
-}
+  //console.log(progress);
+
+  return progress;
+};
+
 
 PlayProgressBar.prototype.update = function update(seekBarRect, seekBarPoint) {
 
@@ -81,18 +95,18 @@ PlayProgressBar.prototype.update = function update(seekBarRect, seekBarPoint) {
       this.player_.getCache().currentTime :
       this.player_.currentTime();
 
-
     const content = videojs.formatTime(this.player_.duration() - time, this.player_.duration());
 
+    if(seekBarPoint !== 0 && this.player_.duration() !== Number.POSITIVE_INFINITY) {
 
-    if(this.player_.duration() !== Infinity && !isNaN(this.player_.duration())){
-      /*
+     /*
       console.log(
         "duration",this.player_.duration(),
-        "time",time,
-        "content",content);
-        */
-      //const content = videojs.formatTime(this.player_.duration() - time, this.player_.duration());
+        "seekBarRect", seekBarRect,
+        "seekBarPoint", seekBarPoint,
+        "content", content);
+      */
+
       this.getChild('timeTooltip').update(seekBarRect, seekBarPoint, `-${content}`);
     }
   });
@@ -107,10 +121,16 @@ MouseTimeDisplay.prototype.update = function update(seekBarRect, seekBarPoint) {
   this.rafId_ = this.requestAnimationFrame(() => {
     const duration = this.player_.duration();
     //const content = videojs.formatTime(seekBarPoint * duration, duration);
-    const content2 = videojs.formatTime(duration-(seekBarPoint * duration), duration);
+    const content2 = videojs.formatTime(duration - (seekBarPoint * duration), duration);
     //console.log(seekBarRect, seekBarPoint,duration,content,content2);
+
+
     this.el_.style.left = `${seekBarRect.width * seekBarPoint}px`;
-    this.getChild('timeTooltip').update(seekBarRect, seekBarPoint, `-${content2}`);
+
+    if(seekBarPoint !== 0 && this.player_.duration() !== Number.POSITIVE_INFINITY) {
+      this.getChild('timeTooltip').update(seekBarRect, seekBarPoint, `-${content2}`);
+    }
+
   });
 }
 
@@ -146,6 +166,7 @@ const onPlayerReady = (player, options) => {
 
   newLink.innerHTML = document.getElementsByClassName('vjs-live-display')[0].innerHTML;
   newLink.id = 'liveButton';
+  newLink.className ='vjs-live-label';
 
   if (!player.paused()) {
     newLink.className = 'vjs-live-label onair';
@@ -190,7 +211,6 @@ const onTimeUpdate = (player, e) => {
   if (!time || !time.length) {
     return;
   }
-
 
 
   if (time.end(0) - player.currentTime() < 30) {
