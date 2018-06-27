@@ -1,7 +1,16 @@
 // Sass for videojs-dvr
 
 $colorButton:tomato;
-$colorButtonOnAir:darken(tomato,50%);
+$colorButtonOnAir:tomato;
+//$colorButtonOutAir:darken(tomato,50%);
+$colorButtonOutAir:gray;
+
+@mixin no-seleccionable {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 
 .video-js {
 
@@ -26,24 +35,6 @@ $colorButtonOnAir:darken(tomato,50%);
       -o-transition-delay: 3s;
     }
 
-    .vjs-live-label {
-      padding: 4px;
-      font-weight: bold;
-      //font-size: 14px;
-      position: relative;
-      bottom: calc(-50% + 4px);
-      color: #8c8b8b;
-      border-radius: 3px;
-      background: $colorButtonOnAir;
-      &.important {
-        background-color: #c43c35;
-      }
-      &.onair {
-        color:#fff;
-        background-color: $colorButton;
-      }
-    }
-
     & .vjs-time-tooltip{
       z-index: 0;
     }
@@ -64,10 +55,44 @@ $colorButtonOnAir:darken(tomato,50%);
       }
       & .vjs-live-button {
 
-        & .vjs-live-label:hover{
-          cursor: pointer;
-        }
+        @include no-seleccionable;
+        padding: 4px;
+        width:50px;
 
+        & .vjs-live-label{
+          width: 100%;
+          display: block;
+          font-weight: bold;
+          //font-size: 14px;
+          text-align: right;
+          position: relative;
+          bottom: calc(-50% + 5px);
+          color: #8c8b8b;
+          //border-radius: 3px;
+          //background-color: $colorButtonOutAir;
+          &.onair {
+            color:#fff;
+            //background-color: $colorButtonOnAir;
+            &:after{
+              background: $colorButtonOnAir;
+            }
+
+          }
+
+          &:after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: $colorButtonOutAir;
+            left: 5px;
+          }
+
+          &:hover{
+            cursor: pointer;
+          }
+        }
       }
 
       .vjs-load-progress {
@@ -118,3 +143,5 @@ $colorButtonOnAir:darken(tomato,50%);
 
   }
 }
+
+
