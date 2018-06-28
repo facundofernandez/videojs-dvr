@@ -36,11 +36,13 @@ LoadProgressBar.prototype.update = function (event) {
   };
 
   // update the width of the progress bar
-  this.el_.style.width = percentify(bufferedEnd, duration);
+  //this.el_.style.width = percentify(bufferedEnd, duration);
+  this.el_.style.width = percentify(bufferedEnd-bufferedEnd-20, duration);
 
   // add child elements to represent the individual buffered time ranges
   for (let i = 0; i < buffered.length; i++) {
-    const start = buffered.start(i);
+    //const start = buffered.start(i);
+    const start = buffered.end(i) - customTime;//buffered.start(i);
     const end = buffered.end(i);
     let part = children[i];
 
