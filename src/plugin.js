@@ -5,8 +5,10 @@ import {version as VERSION} from '../package.json';
 // Default options for the plugin.
 const defaults = {
   startTime: 0,
-  timeLive: 10
+  timeLive: 20
 };
+
+let customTime = defaults.timeLive;
 
 // Cross-compatibility for Video.js 5 and 6.
 const registerPlugin = videojs.registerPlugin || videojs.plugin;
@@ -61,6 +63,7 @@ LoadProgressBar.prototype.update = function (event) {
 };
 
 SeekBar.prototype.update_ = function (currentTime, percent) {
+
   const duration = this.player_.duration();
   const time = (this.player_.scrubbing()) ?
     this.player_.getCache().currentTime : this.player_.currentTime();
@@ -86,18 +89,19 @@ SeekBar.prototype.update_ = function (currentTime, percent) {
 
 SeekBar.prototype.handleMouseMove = function (event) {
 
+  let calculate = 1 - this.calculateDistance(event);
   //let newTime = this.calculateDistance(event) * this.player_.duration();
   let newTime = this.calculateDistance(event) * this.player_.seekable().end(0);
-  //let newTime2 = this.calculateDistance(event) * customDuration;
-  //console.log(newTime,newTime2);
+  let newTime2 = this.player_.seekable().end(0) - (calculate * customTime);
+
   // Don't let video end while scrubbing.
-  if (newTime === this.player_.duration()) {
-    newTime = newTime - 0.1;
-  }
+  if (newTime === this.player_.duration()) newTime = newTime - 0.1;
+  if (newTime2 === this.player_.duration()) newTime2 = newTime2 - 0.1;
+
 
   // Set new time (tell player to seek to new time)
-  this.player_.currentTime(newTime);
-  //this.player_.currentTime( newTime2);
+  //this.player_.currentTime(newTime);
+  this.player_.currentTime( newTime2);
 
 
 };
@@ -254,7 +258,7 @@ const onPlayerReady = (player, options) => {
 
   btnLiveEl.className = 'vjs-live-button vjs-control';
 
-  newLink.innerHTML = document.getElementsByClassName('vjs-live-display')[0].innerHTML;
+  newLink.innerHTML = `<span class="liveCircle"></span><span class="liveText">LIVE</span>`;//document.getElementsByClassName('vjs-live-display')[0].innerHTML;
   newLink.id = 'liveButton';
   newLink.className = !player.paused() ? dvr.ClassOnAir : dvr.ClassOutAir;
 
@@ -300,7 +304,7 @@ const onTimeUpdate = (player, e) => {
   btnLiveEl.className = (time.end(0) - player.currentTime()) < defaults.timeLive ? dvr.ClassOnAir: dvr.ClassOutAir;
 
   player.duration(player.seekable().end(0));
-
+  //player.duration(20);
 };
 
 /**

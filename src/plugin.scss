@@ -56,37 +56,42 @@ $colorButtonOutAir:gray;
       & .vjs-live-button {
 
         @include no-seleccionable;
-        padding: 4px;
-        width:50px;
+        min-width: 50px;
 
         & .vjs-live-label{
           width: 100%;
           display: block;
           font-weight: bold;
           //font-size: 14px;
-          text-align: right;
+
           position: relative;
-          bottom: calc(-50% + 5px);
+          //bottom: calc(-50% + 5px);
+          transform: translateY(-0.5em);
+          top: 50%;
           color: #8c8b8b;
           //border-radius: 3px;
           //background-color: $colorButtonOutAir;
           &.onair {
             color:#fff;
             //background-color: $colorButtonOnAir;
-            &:after{
+            & .liveCircle:after{
               background: $colorButtonOnAir;
             }
 
           }
 
-          &:after {
+          & .liveText{
+            margin-left: 1.5em;
+          }
+
+          & .liveCircle:after {
             content: '';
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: .9em;
+            height: .9em;
             border-radius: 50%;
             background: $colorButtonOutAir;
-            left: 5px;
+            left: .5em;
           }
 
           &:hover{
