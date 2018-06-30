@@ -5,8 +5,10 @@ import {version as VERSION} from '../package.json';
 // Default options for the plugin.
 const defaults = {
   startTime: 0,
-  timeLive: 20
+  timeLive: 60*60
 };
+
+let timeLive = 0;
 
 let customTime = defaults.timeLive;
 
@@ -36,13 +38,13 @@ LoadProgressBar.prototype.update = function (event) {
   };
 
   // update the width of the progress bar
-  //this.el_.style.width = percentify(bufferedEnd, duration);
-  this.el_.style.width = percentify(bufferedEnd-bufferedEnd-20, duration);
+  this.el_.style.width = percentify(bufferedEnd, duration);
+  //this.el_.style.width = percentify(bufferedEnd-bufferedEnd-20, duration);
 
   // add child elements to represent the individual buffered time ranges
   for (let i = 0; i < buffered.length; i++) {
-    //const start = buffered.start(i);
-    const start = buffered.end(i) - customTime;//buffered.start(i);
+    const start = buffered.start(i);
+    //const start = buffered.end(i) - customTime;//buffered.start(i);
     const end = buffered.end(i);
     let part = children[i];
 
@@ -119,6 +121,7 @@ Slider.prototype.update = function update() {
     return;
   }
 
+  //console.log(this.calculateDistance());
 
   // If scrubbing, we could use a cached value to make the handle keep up
   // with the user's mouse. On HTML5 browsers scrubbing is really smooth, but
@@ -136,7 +139,11 @@ Slider.prototype.update = function update() {
     ) / this.player_.getCache().duration - (this.player_.getCache().duration - customDuration )
     : (this.player_.currentTime() - (this.player_.currentTime() - customDuration)  ) / (this.player_.duration() - (this.player_.duration() - customDuration));
   */
-  let progress = this.getPercent();
+
+
+  let progress = (1-(this.player_.duration() - this.player_.currentTime()) / customTime);
+
+  //let progress = this.getPercent();
   //console.log(progress);
   const bar = this.bar;
 
@@ -163,12 +170,12 @@ Slider.prototype.update = function update() {
     progress = 0;
   }
 
-  //if(progress === 0) progress = 1;
+  if(progress > 1) progress = 1;
 
   // Convert to a percentage for setting
   const percentage = (progress * 100).toFixed(2) + '%';
   const style = bar.el().style;
-
+  //console.log(this.getPercent())
   // Set the new bar width or height
   if (progress !== 0) {
     if (this.vertical()) {
@@ -177,6 +184,7 @@ Slider.prototype.update = function update() {
       style.width = percentage;
     }
   }
+
 
   //console.log(progress);
 
@@ -188,9 +196,7 @@ PlayProgressBar.prototype.update = function update(seekBarRect, seekBarPoint) {
   let duration = this.player_.duration();
 
   // If there is an existing rAF ID, cancel it so we don't over-queue.
-  if (this.rafId_) {
-    this.cancelAnimationFrame(this.rafId_);
-  }
+  if (this.rafId_) this.cancelAnimationFrame(this.rafId_);
 
   this.rafId_ = this.requestAnimationFrame(() => {
 
@@ -218,7 +224,7 @@ MouseTimeDisplay.prototype.update = function update(seekBarRect, seekBarPoint) {
   this.rafId_ = this.requestAnimationFrame(() => {
     const duration = this.player_.duration();
     //const content = videojs.formatTime(seekBarPoint * duration, duration);
-    const content2 = videojs.formatTime(duration - (seekBarPoint * duration), duration);
+    const content2 = videojs.formatTime(customTime - (seekBarPoint * customTime), customTime);
     //const content2 = videojs.formatTime(customDuration - (seekBarPoint * customDuration), customDuration);
 
     this.el_.style.left = `${seekBarRect.width * seekBarPoint}px`;
@@ -306,6 +312,9 @@ const onTimeUpdate = (player, e) => {
   btnLiveEl.className = (time.end(0) - player.currentTime()) < defaults.timeLive ? dvr.ClassOnAir: dvr.ClassOutAir;
 
   player.duration(player.seekable().end(0));
+
+  if(!timeLive) timeLive = customTime = player.seekable().end(0);
+
   //player.duration(20);
 };
 
