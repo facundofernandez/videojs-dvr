@@ -16,8 +16,6 @@ let customTime = defaults.timeLive;
 const registerPlugin = videojs.registerPlugin || videojs.plugin;
 //const dom = videojs.dom || videojs;
 
-/**/
-
 const ProgressControl = videojs.getComponent('ProgressControl');
 const SeekBar = ProgressControl.getComponent('SeekBar');
 const PlayProgressBar = ProgressControl.getComponent('PlayProgressBar');
@@ -166,9 +164,6 @@ MouseTimeDisplay.prototype.update = function update(seekBarRect, seekBarPoint) {
 
   });
 };
-
-/**/
-
 
 /**
  * Function to invoke when the player is ready.
