@@ -1,6 +1,6 @@
 {
   "name": "videojs-dvr",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A Video.js plugin for Seekbar with DVR support.",
   "main": "dist/videojs-dvr.cjs.js",
   "module": "dist/videojs-dvr.es.js",
