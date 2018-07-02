@@ -5,7 +5,7 @@ import {version as VERSION} from '../package.json';
 // Default options for the plugin.
 const defaults = {
   startTime: 0,
-  timeLive: 60*60
+  timeLive: 60 * 60
 };
 
 let timeLive = 0;
@@ -16,11 +16,14 @@ let customTime = defaults.timeLive;
 const registerPlugin = videojs.registerPlugin || videojs.plugin;
 //const dom = videojs.dom || videojs;
 
-const PlayProgressBar = videojs.getComponent('PlayProgressBar');
-const MouseTimeDisplay = videojs.getComponent('MouseTimeDisplay');
-const Slider = videojs.getComponent('Slider');
-const SeekBar = videojs.getComponent('SeekBar');
-const LoadProgressBar = videojs.getComponent('LoadProgressBar');
+/**/
+
+const ProgressControl = videojs.getComponent('ProgressControl');
+const SeekBar = ProgressControl.getComponent('SeekBar');
+const PlayProgressBar = ProgressControl.getComponent('PlayProgressBar');
+const MouseTimeDisplay = videojs.getComponent('MouseTimeDisplay');//SeekBar.mouseTimeDisplay;
+
+const LoadProgressBar = ProgressControl.getComponent('LoadProgressBar');
 
 LoadProgressBar.prototype.update = function (event) {
 
@@ -37,8 +40,10 @@ LoadProgressBar.prototype.update = function (event) {
     return ((percent >= 1 ? 1 : percent) * 100) + '%';
   };
 
+
   // update the width of the progress bar
-  this.el_.style.width = percentify(bufferedEnd, duration);
+  if (percentify(bufferedEnd, duration) !== 0)
+    this.el_.style.width = percentify(bufferedEnd, duration);
   //this.el_.style.width = percentify(bufferedEnd-bufferedEnd-20, duration);
 
   // add child elements to represent the individual buffered time ranges
@@ -53,9 +58,15 @@ LoadProgressBar.prototype.update = function (event) {
       children[i] = part;
     }
 
-    // set the percent based on the width of the progress bar (bufferedEnd)
-    part.style.left = percentify(start, bufferedEnd);
-    part.style.width = percentify(end - start, bufferedEnd);
+    if (percentify(start, bufferedEnd) !== 0) {
+      // set the percent based on the width of the progress bar (bufferedEnd)
+      part.style.left = percentify(start, bufferedEnd);
+    }
+
+    if (percentify(end - start, bufferedEnd) !== 0) {
+      part.style.width = percentify(end - start, bufferedEnd);
+
+    }
   }
 
   // remove unused buffered range elements
@@ -89,6 +100,7 @@ SeekBar.prototype.update_ = function (currentTime, percent) {
   }
   // Update the `PlayProgressBar`.
   this.bar.update(videojs.dom.getBoundingClientRect(this.el_), percent);
+
 };
 
 SeekBar.prototype.handleMouseMove = function (event) {
@@ -105,91 +117,12 @@ SeekBar.prototype.handleMouseMove = function (event) {
 
   // Set new time (tell player to seek to new time)
   //this.player_.currentTime(newTime);
-  this.player_.currentTime( newTime2);
+  this.player_.currentTime(newTime2);
 
 
 };
 
-Slider.prototype.update = function update() {
 
-  //if (typeof this.player_.tech_.hls.playlists.media_ !== "undefined") this.player_.tech_.hls.playlists.media_["endList"] = true;
-
-  // In VolumeBar init we have a setTimeout for update that pops and update
-  // to the end of the execution stack. The player is destroyed before then
-  // update will cause an error
-  if (!this.el_) {
-    return;
-  }
-
-  //console.log(this.calculateDistance());
-
-  // If scrubbing, we could use a cached value to make the handle keep up
-  // with the user's mouse. On HTML5 browsers scrubbing is really smooth, but
-  // some flash players are slow, so we might want to utilize this later.
-
-  //let progress2 = (this.player_.scrubbing()) ? this.player_.getCache().currentTime / 20 : this.player_.currentTime() / 20;
-  //let progress =  (this.player_.scrubbing()) ? this.player_.getCache().currentTime / this.player_.getCache().duration() : this.player_.currentTime() / this.player_.duration();
-
-  //console.log(this.player_.getCache());
-  /*
-  let progress = (
-    this.player_.scrubbing()) ?
-    (
-      this.player_.getCache().currentTime - (this.player_.getCache().currentTime - customDuration)
-    ) / this.player_.getCache().duration - (this.player_.getCache().duration - customDuration )
-    : (this.player_.currentTime() - (this.player_.currentTime() - customDuration)  ) / (this.player_.duration() - (this.player_.duration() - customDuration));
-  */
-
-
-  let progress = (1-(this.player_.duration() - this.player_.currentTime()) / customTime);
-
-  //let progress = this.getPercent();
-  //console.log(progress);
-  const bar = this.bar;
-
-  // If there's no bar...
-  if (!bar) {
-    return;
-  }
-  /*
-  console.log("slider", progress, {
-    scrubbing: this.player_.scrubbing(),
-    cache: this.player_.getCache(),
-    duration: this.player_.duration(),
-    durationCache: this.player_.getCache().duration,
-    //durationCustom: durationCustom,
-    currentTime: this.player_.currentTime()
-  });
-
-  */
-  // Protect against no duration and other division issues
-  if (typeof progress !== 'number' ||
-    progress !== progress ||
-    progress < 0 ||
-    progress === Infinity) {
-    progress = 0;
-  }
-
-  if(progress > 1) progress = 1;
-
-  // Convert to a percentage for setting
-  const percentage = (progress * 100).toFixed(2) + '%';
-  const style = bar.el().style;
-  //console.log(this.getPercent())
-  // Set the new bar width or height
-  if (progress !== 0) {
-    if (this.vertical()) {
-      style.height = percentage;
-    } else {
-      style.width = percentage;
-    }
-  }
-
-
-  //console.log(progress);
-
-  return progress;
-};
 
 PlayProgressBar.prototype.update = function update(seekBarRect, seekBarPoint) {
 
@@ -236,6 +169,9 @@ MouseTimeDisplay.prototype.update = function update(seekBarRect, seekBarPoint) {
   });
 };
 
+/**/
+
+
 /**
  * Function to invoke when the player is ready.
  *
@@ -255,6 +191,87 @@ const onPlayerReady = (player, options) => {
   player.addClass('vjs-dvr');
 
   player.controlBar.addClass('vjs-dvr-control-bar');
+
+  const Slider = player.controlBar.progressControl.seekBar.__proto__;//ProgressControl.getComponent('Slider');
+
+  Slider.__proto__.update = function update() {
+
+    //if (typeof this.player_.tech_.hls.playlists.media_ !== "undefined") this.player_.tech_.hls.playlists.media_["endList"] = true;
+
+    // In VolumeBar init we have a setTimeout for update that pops and update
+    // to the end of the execution stack. The player is destroyed before then
+    // update will cause an error
+    if (!this.el_) {
+      return;
+    }
+
+    //console.log(this.calculateDistance());
+
+    // If scrubbing, we could use a cached value to make the handle keep up
+    // with the user's mouse. On HTML5 browsers scrubbing is really smooth, but
+    // some flash players are slow, so we might want to utilize this later.
+
+    //let progress2 = (this.player_.scrubbing()) ? this.player_.getCache().currentTime / 20 : this.player_.currentTime() / 20;
+    //let progress =  (this.player_.scrubbing()) ? this.player_.getCache().currentTime / this.player_.getCache().duration() : this.player_.currentTime() / this.player_.duration();
+
+    //console.log(this.player_.getCache());
+    /*
+    let progress = (
+      this.player_.scrubbing()) ?
+      (
+        this.player_.getCache().currentTime - (this.player_.getCache().currentTime - customDuration)
+      ) / this.player_.getCache().duration - (this.player_.getCache().duration - customDuration )
+      : (this.player_.currentTime() - (this.player_.currentTime() - customDuration)  ) / (this.player_.duration() - (this.player_.duration() - customDuration));
+    */
+
+
+    let progress = (1 - (this.player_.duration() - this.player_.currentTime()) / customTime);
+
+    //let progress = this.getPercent();
+    //console.log(progress);
+    const bar = this.bar;
+
+    // If there's no bar...
+    if (!bar) {
+      return;
+    }
+    /*
+    console.log("slider", progress, {
+      scrubbing: this.player_.scrubbing(),
+      cache: this.player_.getCache(),
+      duration: this.player_.duration(),
+      durationCache: this.player_.getCache().duration,
+      //durationCustom: durationCustom,
+      currentTime: this.player_.currentTime()
+    });
+
+    */
+    // Protect against no duration and other division issues
+    if (typeof progress !== 'number' ||
+      progress !== progress ||
+      progress < 0 ||
+      progress === Infinity) {
+      progress = 0;
+    }
+
+    if (progress > 1) progress = 1;
+
+    // Convert to a percentage for setting
+    const percentage = (progress * 100).toFixed(2) + '%';
+    const style = bar.el().style;
+    //console.log(this.getPercent())
+    // Set the new bar width or height
+    if (progress !== 0) {
+      if (this.vertical()) {
+        style.height = percentage;
+      } else {
+        style.width = percentage;
+      }
+    }
+
+    return progress;
+  };
+
 
   if (player.controlBar.progressControl) {
     player.controlBar.progressControl.addClass('vjs-dvr-progress-control');
@@ -309,11 +326,12 @@ const onTimeUpdate = (player, e) => {
   // a seekable() method, time will be undefined
   if (!time || !time.length) return;
 
-  btnLiveEl.className = (time.end(0) - player.currentTime()) < defaults.timeLive ? dvr.ClassOnAir: dvr.ClassOutAir;
+  //btnLiveEl.className = (time.end(0) - player.currentTime()) < defaults.timeLive ? dvr.ClassOnAir : dvr.ClassOutAir;
+  btnLiveEl.className = (time.end(0) - player.currentTime()) < 20 ? dvr.ClassOnAir : dvr.ClassOutAir;
 
   player.duration(player.seekable().end(0));
 
-  if(!timeLive) timeLive = customTime = player.seekable().end(0);
+  if (!timeLive) timeLive = customTime = player.seekable().end(0);
 
   //player.duration(20);
 };
