@@ -1,5 +1,4 @@
 import videojs from 'video.js';
-import {Dom} from 'video.js'
 import {version as VERSION} from '../package.json';
 
 // Default options for the plugin.
@@ -14,12 +13,12 @@ let customTime = defaults.timeLive;
 
 // Cross-compatibility for Video.js 5 and 6.
 const registerPlugin = videojs.registerPlugin || videojs.plugin;
-//const dom = videojs.dom || videojs;
+// const dom = videojs.dom || videojs;
 
 const ProgressControl = videojs.getComponent('ProgressControl');
 const SeekBar = ProgressControl.getComponent('SeekBar');
 const PlayProgressBar = ProgressControl.getComponent('PlayProgressBar');
-const MouseTimeDisplay = videojs.getComponent('MouseTimeDisplay');//SeekBar.mouseTimeDisplay;
+const MouseTimeDisplay = videojs.getComponent('MouseTimeDisplay');
 
 const LoadProgressBar = ProgressControl.getComponent('LoadProgressBar');
 
@@ -32,7 +31,7 @@ LoadProgressBar.prototype.update = function (event) {
 
   // get the percent width of a time compared to the total end
   const percentify = function (time, end) {
-    // no NaN
+
     const percent = (time / end) || 0;
 
     return ((percent >= 1 ? 1 : percent) * 100) + '%';
@@ -42,12 +41,10 @@ LoadProgressBar.prototype.update = function (event) {
   // update the width of the progress bar
   if (percentify(bufferedEnd, duration) !== 0)
     this.el_.style.width = percentify(bufferedEnd, duration);
-  //this.el_.style.width = percentify(bufferedEnd-bufferedEnd-20, duration);
 
   // add child elements to represent the individual buffered time ranges
   for (let i = 0; i < buffered.length; i++) {
     const start = buffered.start(i);
-    //const start = buffered.end(i) - customTime;//buffered.start(i);
     const end = buffered.end(i);
     let part = children[i];
 
@@ -92,7 +89,7 @@ SeekBar.prototype.update_ = function (currentTime, percent) {
         formatTime(duration, duration)],
       '{1} of {2}'));
    */
-  //console.log(duration - time, duration);
+  // console.log(duration - time, duration);
   if (duration !== Number.POSITIVE_INFINITY) {
     this.el_.setAttribute('aria-valuetext', `-${videojs.formatTime(duration - time, duration)}`);
   }
@@ -104,7 +101,7 @@ SeekBar.prototype.update_ = function (currentTime, percent) {
 SeekBar.prototype.handleMouseMove = function (event) {
 
   let calculate = 1 - this.calculateDistance(event);
-  //let newTime = this.calculateDistance(event) * this.player_.duration();
+  // let newTime = this.calculateDistance(event) * this.player_.duration();
   let newTime = this.calculateDistance(event) * this.player_.seekable().end(0);
   let newTime2 = this.player_.seekable().end(0) - (calculate * customTime);
 
@@ -114,7 +111,7 @@ SeekBar.prototype.handleMouseMove = function (event) {
 
 
   // Set new time (tell player to seek to new time)
-  //this.player_.currentTime(newTime);
+  // this.player_.currentTime(newTime);
   this.player_.currentTime(newTime2);
 
 
@@ -132,10 +129,7 @@ PlayProgressBar.prototype.update = function update(seekBarRect, seekBarPoint) {
     const time = (this.player_.scrubbing()) ?
       this.player_.getCache().currentTime : this.player_.currentTime();
 
-    //const content = videojs.formatTime(this.player_.duration() - time, this.player_.duration());
-    //console.log(videojs.formatTime(this.player_.duration() - time, this.player_.duration()));
     const content = videojs.formatTime(duration - time, duration);
-    //const content = videojs.formatTime(duration - time, customDuration);
 
     if (seekBarPoint !== 0 && duration !== Number.POSITIVE_INFINITY) {
       this.getChild('timeTooltip').update(seekBarRect, seekBarPoint, `-${content}`);
@@ -151,10 +145,8 @@ MouseTimeDisplay.prototype.update = function update(seekBarRect, seekBarPoint) {
   }
 
   this.rafId_ = this.requestAnimationFrame(() => {
-    const duration = this.player_.duration();
-    //const content = videojs.formatTime(seekBarPoint * duration, duration);
+
     const content2 = videojs.formatTime(customTime - (seekBarPoint * customTime), customTime);
-    //const content2 = videojs.formatTime(customDuration - (seekBarPoint * customDuration), customDuration);
 
     this.el_.style.left = `${seekBarRect.width * seekBarPoint}px`;
 
@@ -185,7 +177,7 @@ const onPlayerReady = (player, options) => {
 
   player.controlBar.addClass('vjs-dvr-control-bar');
 
-  const Slider = player.controlBar.progressControl.seekBar.__proto__;//ProgressControl.getComponent('Slider');
+  const Slider = player.controlBar.progressControl.seekBar.__proto__;
 
   Slider.__proto__.update = function update() {
 
@@ -195,7 +187,7 @@ const onPlayerReady = (player, options) => {
 
     let progress;
 
-    progress = this.name_ === "VolumeBar" ?  this.getPercent() : (1 - (this.player_.duration() - this.player_.currentTime()) / customTime);
+    progress = this.name_ === "VolumeBar" ? this.getPercent() : (1 - (this.player_.duration() - this.player_.currentTime()) / customTime);
 
     const bar = this.bar;
 
@@ -267,8 +259,6 @@ const onPlayerReady = (player, options) => {
 
   controlBar.insertBefore(btnLiveEl, insertBeforeNode);
 
-  //videojs.log('dvr Plugin ENABLED!', options);
-
 };
 
 const onTimeUpdate = (player, e) => {
@@ -276,19 +266,13 @@ const onTimeUpdate = (player, e) => {
   let time = player.seekable();
   let btnLiveEl = document.getElementById('liveButton');
 
-  // When any tech is disposed videojs will trigger a 'timeupdate' event
-  // when calling stopTrackingCurrentTime(). If the tech does not have
-  // a seekable() method, time will be undefined
   if (!time || !time.length) return;
 
-  //btnLiveEl.className = (time.end(0) - player.currentTime()) < defaults.timeLive ? dvr.ClassOnAir : dvr.ClassOutAir;
   btnLiveEl.className = (time.end(0) - player.currentTime()) < 20 ? dvr.ClassOnAir : dvr.ClassOutAir;
 
   player.duration(player.seekable().end(0));
 
   if (!timeLive) timeLive = customTime = player.seekable().end(0);
-
-  //player.duration(20);
 };
 
 /**
