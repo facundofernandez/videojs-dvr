@@ -25,7 +25,7 @@
     "docs": "npm-run-all docs:*",
     "docs:api": "jsdoc src -r -c jsdoc.json -d docs/api",
     "docs:toc": "doctoc README.md",
-    "lint": "vjsstandard",
+    "lint": "", // "vjsstandard",
     "start": "npm-run-all -p start:server watch",
     "start:server": "static -a 0.0.0.0 -p 9999 -H '{\"Cache-Control\": \"no-cache, must-revalidate\"}' .",
     "pretest": "npm-run-all lint build",
