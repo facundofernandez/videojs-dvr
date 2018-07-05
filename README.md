@@ -2,6 +2,8 @@
 
 A Video.js plugin for Seekbar with DVR support.
 
+![Scheme](ima2.png)
+
 ## Table of Contents
 
 <!-- START doctoc -->
@@ -61,7 +63,7 @@ require(['video.js', 'videojs-dvr'], function(videojs) {
 
 ## License
 
-MIT. Copyright (c) ffernandez &lt;ffernandez@app-con.com&gt;
+MIT. Copyright (c) ffernandez &lt;ff.fernandez.facundo@gmail.com&gt;
 
 
 [videojs]: http://videojs.com/
