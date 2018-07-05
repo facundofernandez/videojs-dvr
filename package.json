@@ -46,6 +46,10 @@
     "videojs",
     "videojs-plugin"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facundofernandez/videojs-dvr.git"
+  },
   "author": "ff.fernandez.facundo <ff.fernandez.facundo@gmail.com>",
   "license": "MIT",
   "vjsstandard": {
