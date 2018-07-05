@@ -46,7 +46,7 @@
     "videojs",
     "videojs-plugin"
   ],
-  "author": "ffernandez <ffernandez@app-con.com>",
+  "author": "ff.fernandez.facundo <ff.fernandez.facundo@gmail.com>",
   "license": "MIT",
   "vjsstandard": {
     "ignore": [

@@ -1,6 +1,7 @@
+import document from 'global/document';
+import window from 'global/window';
 import videojs from 'video.js';
 import {version as VERSION} from '../package.json';
-
 
 // Default options for the plugin.
 const defaults = {
@@ -9,7 +10,6 @@ const defaults = {
 };
 
 let timeLive = 0;
-
 let customTime = defaults.timeLive;
 
 // Cross-compatibility for Video.js 5 and 6.
@@ -20,7 +20,6 @@ const ProgressControl = videojs.getComponent('ProgressControl');
 const SeekBar = ProgressControl.getComponent('SeekBar');
 const PlayProgressBar = ProgressControl.getComponent('PlayProgressBar');
 const MouseTimeDisplay = videojs.getComponent('MouseTimeDisplay');
-
 const LoadProgressBar = ProgressControl.getComponent('LoadProgressBar');
 
 LoadProgressBar.prototype.update = function (event) {
@@ -50,7 +49,7 @@ LoadProgressBar.prototype.update = function (event) {
     let part = children[i];
 
     if (!part) {
-      part = this.el_.appendChild(window.document.createElement('div'));
+      part = this.el_.appendChild(document.createElement('div'));
       children[i] = part;
     }
 
@@ -228,8 +227,8 @@ const onPlayerReady = (player, options) => {
   }
 
   // ADD Live Button:
-  const btnLiveEl = window.document.createElement('div');
-  const newLink = window.document.createElement('a');
+  const btnLiveEl = document.createElement('div');
+  const newLink = document.createElement('a');
 
   btnLiveEl.className = 'vjs-live-button vjs-control';
 
@@ -256,8 +255,8 @@ const onPlayerReady = (player, options) => {
 
   btnLiveEl.appendChild(newLink);
 
-  const controlBar = window.document.getElementsByClassName('vjs-control-bar')[0];
-  const insertBeforeNode = window.document.getElementsByClassName('vjs-progress-control')[0];
+  const controlBar = document.getElementsByClassName('vjs-control-bar')[0];
+  const insertBeforeNode = document.getElementsByClassName('vjs-progress-control')[0];
 
   controlBar.insertBefore(btnLiveEl, insertBeforeNode);
 
@@ -267,7 +266,7 @@ const onTimeUpdate = (player, e) => {
 
   const time = player.seekable();
 
-  const btnLiveEl = window.document.getElementById('liveButton');
+  const btnLiveEl = document.getElementById('liveButton');
 
   if (!time || !time.length) {
     return;
@@ -305,7 +304,7 @@ const dvr = function (options) {
   });
 
   this.on('pause', (e) => {
-    window.document.getElementById('liveButton').className = 'vjs-live-label';
+    document.getElementById('liveButton').className = 'vjs-live-label';
   });
 
   this.ready(() => {
