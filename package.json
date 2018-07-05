@@ -50,6 +50,10 @@
     "type": "git",
     "url": "git+https://github.com/facundofernandez/videojs-dvr.git"
   },
+  "homepage": "https://github.com/facundofernandez/videojs-dvr",
+  "bugs": {
+    "url": "https://github.com/facundofernandez/videojs-dvr/issues"
+  },
   "author": "ff.fernandez.facundo <ff.fernandez.facundo@gmail.com>",
   "license": "MIT",
   "vjsstandard": {
