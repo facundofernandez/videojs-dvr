@@ -1,6 +1,13 @@
+
+[npm-icon]: https://nodei.co/npm/videojs-dvr.png?downloads=true&downloadRank=true&stars=true
+
+[npm-link]: https://nodei.co/npm/videojs-dvr/
+
 # videojs-dvr
 
 A Video.js plugin for Seekbar with DVR support.
+
+[![NPM][npm-icon]][npm-link]
 
 ![Scheme](ima2.png)
 
