@@ -1,3 +1,8 @@
+<a name="1.3.3"></a>
+## [1.3.3](https://github.com/facundofernandez/videojs-dvr/compare/v1.3.1...v1.3.2) (2018-07-05)
+
+* Slider circle drag, is arranged
+
 <a name="1.3.2"></a>
 ## [1.3.2](https://github.com/facundofernandez/videojs-dvr/compare/v1.3.1...v1.3.2) (2018-07-05)
 

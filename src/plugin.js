@@ -112,6 +112,8 @@ SeekBar.prototype.handleMouseMove = function (event) {
   // Set new time (tell player to seek to new time)
   this.player_.currentTime(newTime2);
 
+  this.update();
+
 };
 
 PlayProgressBar.prototype.update = function update(seekBarRect, seekBarPoint) {
