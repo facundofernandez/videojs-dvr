@@ -16,6 +16,8 @@ let customTime = defaults.timeLive;
 const registerPlugin = videojs.registerPlugin || videojs.plugin;
 // const dom = videojs.dom || videojs;
 
+const Button = videojs.getComponent('Button');
+const Component = videojs.getComponent('Component');
 const ProgressControl = videojs.getComponent('ProgressControl');
 const SeekBar = ProgressControl.getComponent('SeekBar');
 const PlayProgressBar = ProgressControl.getComponent('PlayProgressBar');
@@ -228,53 +230,27 @@ const onPlayerReady = (player, options) => {
     player.controlBar.progressControl.addClass('vjs-dvr-progress-control');
   }
 
-  // ADD Live Button:
-  const btnLiveEl = document.createElement('div');
-  const newLink = document.createElement('a');
+  player.controlBar.liveButton = player.controlBar.addChild('liveButton');
 
-  btnLiveEl.className = 'vjs-live-button vjs-control';
-
-  newLink.innerHTML = `<span class='liveCircle'></span><span class='liveText'>LIVE</span>`;
-  newLink.id = 'liveButton';
-  newLink.className = !player.paused() ? dvr.ClassOnAir : dvr.ClassOutAir;
-
-  const clickHandler = (e) => {
-
-    const currentTime = player.seekable().end(0);
-
-    player.currentTime(currentTime);
-
-    player.play();
-  };
-
-  if (newLink.addEventListener) {
-    // DOM method
-    newLink.addEventListener('click', clickHandler, false);
-  } else if (newLink.attachEvent) {
-    // this is for IE, because it doesn't support addEventListener
-    newLink.attachEvent('onclick', () => clickHandler.apply(newLink, [window.event]));
-  }
-
-  btnLiveEl.appendChild(newLink);
-
-  const controlBar = document.getElementsByClassName('vjs-control-bar')[0];
-  const insertBeforeNode = document.getElementsByClassName('vjs-progress-control')[0];
-
-  controlBar.insertBefore(btnLiveEl, insertBeforeNode);
-
+  player.controlBar.el().insertBefore(
+    player.controlBar.liveButton.el(),
+    player.controlBar.progressControl.el()
+  );
 };
 
 const onTimeUpdate = (player, e) => {
 
   const time = player.seekable();
 
-  const btnLiveEl = document.getElementById('liveButton');
-
   if (!time || !time.length) {
     return;
   }
 
-  btnLiveEl.className = (time.end(0) - player.currentTime()) < 20 ? dvr.ClassOnAir : dvr.ClassOutAir;
+  if ((time.end(0) - player.currentTime()) < 20) {
+    player.controlBar.liveButton.addClass('onair');
+  } else {
+    player.controlBar.liveButton.removeClass('onair');
+  }
 
   player.duration(player.seekable().end(0));
 
@@ -306,7 +282,7 @@ const dvr = function (options) {
   });
 
   this.on('pause', (e) => {
-    document.getElementById('liveButton').className = 'vjs-live-label';
+    this.controlBar.liveButton.removeClass('onair');
   });
 
   this.ready(() => {
@@ -314,14 +290,64 @@ const dvr = function (options) {
   });
 };
 
+/**
+ * Button to seek forward to the current time.
+ *
+ * @extends Button
+ */
+class LiveButton extends Button {
+
+  /**
+   * Creates an instance of this class.
+   *
+   * @param {Player} player
+   *        The Video.js `Player` object that this class should be attached to.
+   *
+   * @param {Object} [options]
+   *        An object containing options for the button.
+   */
+  constructor(player, options) {
+    super(player, options);
+    this.el().innerHTML = (
+      '<span class="liveCircle"></span><span class="liveText">LIVE</span>');
+    if (!player.paused()) {
+      this.addClass('onair');
+    }
+  }
+
+  /**
+   * Builds the default DOM `className`.
+   *
+   * @return {string}
+   *         The DOM `className` for this object.
+   */
+  buildCSSClass() {
+    return `vjs-live-button ${super.buildCSSClass()}`;
+  }
+
+  /**
+   * Handles a button click.
+   *
+   * @param {EventTarget~Event} [event]
+   *        The event that caused this function to be called.
+   *
+   * @listens tap
+   * @listens click
+   */
+  handleClick(event) {
+    const currentTime = this.player_.seekable().end(0);
+
+    this.player_.currentTime(currentTime);
+    this.player_.play();
+  }
+}
+
+Component.registerComponent('LiveButton', LiveButton);
+
 // Register the plugin with video.js.
 registerPlugin('dvr', dvr);
 
 // Include the version number.
 dvr.VERSION = VERSION;
-
-dvr.ClassOnAir = 'vjs-live-label onair';
-dvr.ClassOutAir = 'vjs-live-label';
-
 
 export default dvr;
