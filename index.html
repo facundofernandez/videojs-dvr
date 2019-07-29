@@ -1,13 +1,14 @@
 <!doctype html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>videojs-dvr Demo</title>
-  <link href="https://vjs.zencdn.net/6.8.0/video-js.css" rel="stylesheet">
+  <link href="https://vjs.zencdn.net/7.6.0/video-js.css" rel="stylesheet">
   <link href="dist/videojs-dvr.css" rel="stylesheet">
 
   <style>
-    body{
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -15,31 +16,30 @@
 
     }
 
-    #videojs-dvr-player{
+    #videojs-dvr-player {
       width: 700px;
       height: 400px;
 
     }
-
   </style>
 </head>
+
 <body>
-<video id="videojs-dvr-player" class="video-js vjs-default-skin" controls autoplay>
-  <source src="https://b028.wpc.azureedge.net/80B028/Samples/a38e6323-95e9-4f1f-9b38-75eba91704e4/5f2ce531-d508-49fb-8152-647eba422aec.ism/Manifest(format=m3u8-aapl)"
-          type='application/x-mpegURL'>
-</video>
+  <video id="videojs-dvr-player" class="video-js vjs-default-skin" controls autoplay>
+    <source
+      src="https://b028.wpc.azureedge.net/80B028/Samples/a38e6323-95e9-4f1f-9b38-75eba91704e4/5f2ce531-d508-49fb-8152-647eba422aec.ism/Manifest(format=m3u8-aapl)"
+      type='application/x-mpegURL'>
+  </video>
 
-<script src="https://vjs.zencdn.net/6.8.0/video.js"></script>
-<script src="node_modules/videojs-contrib-hls/dist/videojs-contrib-hls.min.js"></script>
-<script src="node_modules/videojs-social-media/dist/videojs-social-media.min.js"></script>
-
+  <script src="https://vjs.zencdn.net/7.6.0/video.js"></script>
   <script src="dist/videojs-dvr.js"></script>
   <script>
-    (function(window, videojs) {
+    (function (window, videojs) {
       var player = window.player = videojs('videojs-dvr-player');
       player.dvr();
       player.play();
     }(window, window.videojs));
   </script>
 </body>
+
 </html>

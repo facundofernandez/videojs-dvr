@@ -1,6 +1,6 @@
 {
   "name": "videojs-dvr",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "A Video.js plugin for Seekbar with DVR support.",
   "main": "dist/videojs-dvr.cjs.js",
   "module": "dist/videojs-dvr.es.js",
@@ -75,19 +75,19 @@
   ],
   "dependencies": {
     "global": "^4.3.2",
-    "video.js": "^6.8.0",
-    "videojs-contrib-hls": "^5.14.1"
+    "video.js": "^7.6.0",
+    "videojs-standard": "^8.0.3"
   },
   "devDependencies": {
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-object-assign": "^6.8.0",
     "babel-preset-es2015": "^6.14.0",
-    "bannerize": "^1.0.2",
+    "bannerize": "^1.1.4",
     "conventional-changelog-cli": "^1.3.1",
     "conventional-changelog-videojs": "^3.0.0",
     "doctoc": "^1.3.0",
     "husky": "^0.13.3",
-    "jsdoc": "^3.4.3",
+    "jsdoc": "^3.6.3",
     "karma": "^1.7.0",
     "karma-chrome-launcher": "^2.1.1",
     "karma-detect-browsers": "^2.2.5",
@@ -96,7 +96,7 @@
     "karma-qunit": "^1.2.1",
     "karma-safari-launcher": "^1.0.0",
     "mkdirp": "^0.5.1",
-    "node-sass": "4.5.3",
+    "node-sass": "^4.12.0",
     "node-static": "^0.7.9",
     "npm-run-all": "^4.0.2",
     "qunitjs": "^2.3.2",
@@ -110,8 +110,7 @@
     "rollup-watch": "^3.2.2",
     "semver": "^5.3.0",
     "sinon": "^2.2.0",
-    "uglify-js": "^3.0.7",
-    "videojs-languages": "^1.0.0",
-    "videojs-standard": "^6.0.0"
+    "uglify-js": "^3.6.0",
+    "videojs-languages": "^1.0.0"
   }
 }
