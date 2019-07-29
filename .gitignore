@@ -34,3 +34,4 @@ docs/api/
 test/dist/
 
 *.iml
+package-lock.json
